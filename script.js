@@ -29,7 +29,7 @@ function connect() {
     return;
   }
 
-  socket = io("http://localhost:3000");
+  socket = io(config.SOCKET_URL);
 
   socket.on("connect", () => {
     log("Connected to server");
