@@ -4,9 +4,13 @@ import { useState, useRef } from "react";
 
 interface VideoPlayerProps {
   initialUrl?: string;
+  onSendMessage?: (message: string) => void;
 }
 
-export default function VideoPlayer({ initialUrl = "" }: VideoPlayerProps) {
+export default function VideoPlayer({
+  initialUrl = "",
+  onSendMessage,
+}: VideoPlayerProps) {
   const [videoUrl, setVideoUrl] = useState(initialUrl);
   const [currentUrl, setCurrentUrl] = useState(initialUrl);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -19,6 +23,20 @@ export default function VideoPlayer({ initialUrl = "" }: VideoPlayerProps) {
         videoRef.current.currentTime = 0;
         videoRef.current.load();
       }
+    }
+  };
+
+  const handleVideoPlay = () => {
+    // Send "/play" message to chat when video starts playing
+    if (onSendMessage && videoRef.current) {
+      onSendMessage("/play " + videoRef.current.currentTime);
+    }
+  };
+
+  const handleVideoPause = () => {
+    // Send "/pause" message to chat when video is paused
+    if (onSendMessage) {
+      onSendMessage("/pause");
     }
   };
 
@@ -61,6 +79,8 @@ export default function VideoPlayer({ initialUrl = "" }: VideoPlayerProps) {
             controls
             className="video-player"
             style={{ width: "100%", maxWidth: "800px" }}
+            onPlay={handleVideoPlay}
+            onPause={handleVideoPause}
           >
             <source src={currentUrl} type="video/mp4" />
             <source src={currentUrl} type="video/webm" />

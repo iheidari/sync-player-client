@@ -87,11 +87,11 @@ export default function Home() {
     setSocket(newSocket);
   };
 
-  const sendMessage = () => {
-    if (messageInput.trim() && socket && currentRoom) {
+  const sendMessage = (message?: string) => {
+    if ((message || messageInput.trim()) && socket && currentRoom) {
       socket.emit("send-message", {
         roomId: currentRoom,
-        message: messageInput.trim(),
+        message: message || messageInput.trim(),
       });
       setMessageInput("");
     }

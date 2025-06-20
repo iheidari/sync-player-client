@@ -14,7 +14,7 @@ interface ChatProps {
   messages: Message[];
   messageInput: string;
   onMessageInputChange: (value: string) => void;
-  onSendMessage: () => void;
+  onSendMessage: (message?: string) => void;
 }
 
 export default function Connected({
@@ -40,6 +40,12 @@ export default function Connected({
     }
   };
 
+  // Function to handle video player messages
+  const handleVideoMessage = (message: string) => {
+    // We need to trigger the send message after setting the input
+    onSendMessage(message);
+  };
+
   return (
     <>
       <div className={`status ${isConnected ? "connected" : "disconnected"}`}>
@@ -47,7 +53,7 @@ export default function Connected({
       </div>
 
       <div className="chat-container">
-        <VideoPlayer />
+        <VideoPlayer onSendMessage={handleVideoMessage} />
         <h3>Chat</h3>
         <div className="messages">
           {messages.map((msg, index) => (
