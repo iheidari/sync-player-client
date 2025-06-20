@@ -15,6 +15,8 @@ interface ChatProps {
   messageInput: string;
   onMessageInputChange: (value: string) => void;
   onSendMessage: (message?: string) => void;
+  videoUrl: string;
+  onVideoUrlChange: (url: string) => void;
 }
 
 export default function Connected({
@@ -23,6 +25,8 @@ export default function Connected({
   messageInput,
   onMessageInputChange,
   onSendMessage,
+  videoUrl,
+  onVideoUrlChange,
 }: ChatProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -53,7 +57,11 @@ export default function Connected({
       </div>
 
       <div className="chat-container">
-        <VideoPlayer onSendMessage={handleVideoMessage} />
+        <VideoPlayer
+          onSendMessage={handleVideoMessage}
+          videoUrl={videoUrl}
+          onVideoUrlChange={onVideoUrlChange}
+        />
         <h3>Chat</h3>
         <div className="messages">
           {messages.map((msg, index) => (
@@ -75,7 +83,7 @@ export default function Connected({
             onKeyDown={handleMessageKeyPress}
             placeholder="Type a message..."
           />
-          <button onClick={onSendMessage}>Send</button>
+          <button onClick={() => onSendMessage()}>Send</button>
         </div>
       </div>
     </>

@@ -26,6 +26,7 @@ export default function Home() {
   const [username, setUsername] = useState("");
   const [roomId, setRoomId] = useState("");
   const [messageInput, setMessageInput] = useState("");
+  const [videoUrl, setVideoUrl] = useState("");
 
   const log = (message: string) => {
     const timestamp = new Date().toISOString();
@@ -71,8 +72,8 @@ export default function Home() {
     });
 
     newSocket.on("new-message", (data: Message) => {
-      console.log("🚀 ~ newSocket.on ~ data:", data);
       setMessages((prev) => [...prev, data]);
+      interpretMessage(data.message);
     });
 
     newSocket.on(
@@ -85,6 +86,25 @@ export default function Home() {
     );
 
     setSocket(newSocket);
+  };
+
+  const interpretMessage = (message: string) => {
+    const [command, ...args] = message.split(" ");
+    switch (command) {
+      case "/load": {
+        const url = args.join(" ");
+        if (url) {
+          setVideoUrl(url);
+        }
+        break;
+      }
+      case "/play": {
+        break;
+      }
+      case "/pause": {
+        break;
+      }
+    }
   };
 
   const sendMessage = (message?: string) => {
@@ -143,6 +163,8 @@ export default function Home() {
           messageInput={messageInput}
           onMessageInputChange={setMessageInput}
           onSendMessage={sendMessage}
+          videoUrl={videoUrl}
+          onVideoUrlChange={setVideoUrl}
         />
       )}
     </div>

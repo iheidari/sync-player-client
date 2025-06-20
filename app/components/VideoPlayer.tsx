@@ -1,29 +1,46 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 interface VideoPlayerProps {
   initialUrl?: string;
   onSendMessage: (message: string) => void;
+  videoUrl: string;
+  onVideoUrlChange: (url: string) => void;
 }
 
 export default function VideoPlayer({
   initialUrl = "",
   onSendMessage,
+  videoUrl,
+  onVideoUrlChange,
 }: VideoPlayerProps) {
-  const [videoUrl, setVideoUrl] = useState(initialUrl);
   const [currentUrl, setCurrentUrl] = useState(initialUrl);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const urlInputRef = useRef<HTMLInputElement>(null);
 
-  const handleLoad = () => {
-    if (videoUrl.trim()) {
+  // Update currentUrl when videoUrl prop changes
+  useEffect(() => {
+    console.log("🚀 ~ useEffect ~ videoUrl:", videoUrl);
+    console.log("🚀 ~ useEffect ~ currentUrl:", currentUrl);
+    if (videoUrl) {
       setCurrentUrl(videoUrl);
-      onSendMessage("/load " + videoUrl);
+      // Update the textbox value to match the new videoUrl
+      if (urlInputRef.current) {
+        urlInputRef.current.value = videoUrl;
+      }
       // Reset video to beginning when changing URL
       if (videoRef.current) {
         videoRef.current.currentTime = 0;
         videoRef.current.load();
       }
+    }
+  }, [videoUrl, currentUrl]);
+
+  const handleLoad = (url: string) => {
+    if (url.trim()) {
+      onVideoUrlChange(url);
+      onSendMessage("/load " + url);
     }
   };
 
@@ -41,36 +58,26 @@ export default function VideoPlayer({
     onSendMessage("/pause");
   };
 
-  const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setVideoUrl(e.target.value);
-  };
-
-  const handleKeyPress = (event: React.KeyboardEvent) => {
-    if (event.key === "Enter") {
-      handleLoad();
-    }
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const url = urlInputRef.current?.value || "";
+    handleLoad(url);
   };
 
   return (
     <div className="video-player-container">
       <div className="video-controls">
-        <div className="url-input-group">
+        <form onSubmit={handleSubmit} className="url-input-group">
           <input
+            ref={urlInputRef}
             type="text"
-            value={videoUrl}
-            onChange={handleUrlChange}
-            onKeyDown={handleKeyPress}
             placeholder="Enter video URL..."
             className="url-input"
           />
-          <button
-            onClick={handleLoad}
-            className="play-button"
-            disabled={!videoUrl.trim()}
-          >
+          <button type="submit" className="play-button">
             Load
           </button>
-        </div>
+        </form>
       </div>
 
       <div className="video-container">
