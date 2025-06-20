@@ -27,6 +27,7 @@ export default function Home() {
   const [roomId, setRoomId] = useState("");
   const [messageInput, setMessageInput] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const log = (message: string) => {
     const timestamp = new Date().toISOString();
@@ -99,9 +100,19 @@ export default function Home() {
         break;
       }
       case "/play": {
+        if (videoRef.current) {
+          const timeArg = args[0];
+          if (timeArg && !isNaN(parseFloat(timeArg))) {
+            videoRef.current.currentTime = parseFloat(timeArg);
+          }
+          videoRef.current.play();
+        }
         break;
       }
       case "/pause": {
+        if (videoRef.current) {
+          videoRef.current.pause();
+        }
         break;
       }
     }
@@ -165,6 +176,7 @@ export default function Home() {
           onSendMessage={sendMessage}
           videoUrl={videoUrl}
           onVideoUrlChange={setVideoUrl}
+          videoRef={videoRef}
         />
       )}
     </div>

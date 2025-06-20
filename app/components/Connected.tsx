@@ -17,6 +17,7 @@ interface ChatProps {
   onSendMessage: (message?: string) => void;
   videoUrl: string;
   onVideoUrlChange: (url: string) => void;
+  videoRef: React.RefObject<HTMLVideoElement>;
 }
 
 export default function Connected({
@@ -27,6 +28,7 @@ export default function Connected({
   onSendMessage,
   videoUrl,
   onVideoUrlChange,
+  videoRef,
 }: ChatProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -61,6 +63,7 @@ export default function Connected({
           onSendMessage={handleVideoMessage}
           videoUrl={videoUrl}
           onVideoUrlChange={onVideoUrlChange}
+          videoRef={videoRef}
         />
         <h3>Chat</h3>
         <div className="messages">

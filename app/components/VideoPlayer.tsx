@@ -7,6 +7,7 @@ interface VideoPlayerProps {
   onSendMessage: (message: string) => void;
   videoUrl: string;
   onVideoUrlChange: (url: string) => void;
+  videoRef: React.RefObject<HTMLVideoElement>;
 }
 
 export default function VideoPlayer({
@@ -14,15 +15,13 @@ export default function VideoPlayer({
   onSendMessage,
   videoUrl,
   onVideoUrlChange,
+  videoRef,
 }: VideoPlayerProps) {
   const [currentUrl, setCurrentUrl] = useState(initialUrl);
-  const videoRef = useRef<HTMLVideoElement>(null);
   const urlInputRef = useRef<HTMLInputElement>(null);
 
   // Update currentUrl when videoUrl prop changes
   useEffect(() => {
-    console.log("🚀 ~ useEffect ~ videoUrl:", videoUrl);
-    console.log("🚀 ~ useEffect ~ currentUrl:", currentUrl);
     if (videoUrl) {
       setCurrentUrl(videoUrl);
       // Update the textbox value to match the new videoUrl
