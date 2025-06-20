@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 
 interface VideoPlayerProps {
   initialUrl?: string;
-  onSendMessage?: (message: string) => void;
+  onSendMessage: (message: string) => void;
 }
 
 export default function VideoPlayer({
@@ -18,6 +18,7 @@ export default function VideoPlayer({
   const handleLoad = () => {
     if (videoUrl.trim()) {
       setCurrentUrl(videoUrl);
+      onSendMessage("/load " + videoUrl);
       // Reset video to beginning when changing URL
       if (videoRef.current) {
         videoRef.current.currentTime = 0;
@@ -28,16 +29,16 @@ export default function VideoPlayer({
 
   const handleVideoPlay = () => {
     // Send "/play" message to chat when video starts playing
-    if (onSendMessage && videoRef.current) {
-      onSendMessage("/play " + videoRef.current.currentTime);
+    if (videoRef.current) {
+      onSendMessage(
+        "/play " + Math.round(videoRef.current.currentTime * 100) / 100
+      );
     }
   };
 
   const handleVideoPause = () => {
     // Send "/pause" message to chat when video is paused
-    if (onSendMessage) {
-      onSendMessage("/pause");
-    }
+    onSendMessage("/pause");
   };
 
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
