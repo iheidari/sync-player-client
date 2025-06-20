@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { io, Socket } from "socket.io-client";
 import ConnectionForm from "./components/ConnectionForm";
-import Chat from "./components/Chat";
+import Connected from "./components/Connected";
 
 interface User {
   username: string;
@@ -137,7 +137,7 @@ export default function Home() {
       )}
 
       {isConnected && (
-        <Chat
+        <Connected
           isConnected={isConnected}
           messages={messages}
           messageInput={messageInput}

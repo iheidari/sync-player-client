@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useEffect } from "react";
+import VideoPlayer from "./VideoPlayer";
 
 interface Message {
   username: string;
@@ -16,7 +17,7 @@ interface ChatProps {
   onSendMessage: () => void;
 }
 
-export default function Chat({
+export default function Connected({
   isConnected,
   messages,
   messageInput,
@@ -46,6 +47,7 @@ export default function Chat({
       </div>
 
       <div className="chat-container">
+        <VideoPlayer />
         <h3>Chat</h3>
         <div className="messages">
           {messages.map((msg, index) => (
