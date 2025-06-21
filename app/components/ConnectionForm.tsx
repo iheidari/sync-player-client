@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 interface ConnectionFormProps {
   username: string;
   roomId: string;
@@ -10,11 +12,15 @@ interface ConnectionFormProps {
 export default function ConnectionForm({
   username,
   roomId,
-  isConnecting = false,
   onUsernameChange,
   onRoomIdChange,
   onConnect,
 }: ConnectionFormProps) {
+  const [isConnecting, setIsConnecting] = useState(false);
+  const handleConnect = () => {
+    setIsConnecting(true);
+    onConnect();
+  };
   return (
     <div
       className="connection-form"
