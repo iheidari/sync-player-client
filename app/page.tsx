@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { io, Socket } from "socket.io-client";
 import ConnectionForm from "./components/ConnectionForm";
 import Connected from "./components/Connected";
+import ConnectedHeader from "./components/ConnectedHeader";
 
 interface User {
   username: string;
@@ -143,31 +144,14 @@ export default function Home() {
     log("Left room and disconnected");
   };
 
-  return (
-    <div className="container">
-      <header className="main-header">
-        <div className="header-left">
-          <span className="header-username">{currentUser || "Username"}</span>
-          <span className="header-room-id">
-            {currentRoom ? `Room: ${currentRoom}` : "Room: --"}
-          </span>
-        </div>
-        <div className="header-right">
-          {isConnected && <button onClick={leaveRoom}>Leave Room</button>}
-        </div>
-      </header>
-
-      {!isConnected && (
-        <ConnectionForm
-          username={username}
-          roomId={roomId}
-          onUsernameChange={setUsername}
-          onRoomIdChange={setRoomId}
-          onConnect={connect}
+  if (isConnected) {
+    return (
+      <div className="container">
+        <ConnectedHeader
+          currentUser={currentUser ?? ""}
+          currentRoom={currentRoom ?? ""}
+          leaveRoom={leaveRoom}
         />
-      )}
-
-      {isConnected && (
         <Connected
           isConnected={isConnected}
           messages={messages}
@@ -178,7 +162,17 @@ export default function Home() {
           onVideoUrlChange={setVideoUrl}
           videoRef={videoRef}
         />
-      )}
-    </div>
+      </div>
+    );
+  }
+
+  return (
+    <ConnectionForm
+      username={username}
+      roomId={roomId}
+      onUsernameChange={setUsername}
+      onRoomIdChange={setRoomId}
+      onConnect={connect}
+    />
   );
 }
