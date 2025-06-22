@@ -29,6 +29,7 @@ export default function Home() {
   const [messageInput, setMessageInput] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [newCommandTime, setNewCommandTime] = useState(new Date().getTime());
 
   const log = (message: string) => {
     const timestamp = new Date().toISOString();
@@ -91,6 +92,9 @@ export default function Home() {
   };
 
   const interpretMessage = (message: string) => {
+    if (message.startsWith("/")) {
+      setNewCommandTime(new Date().getTime());
+    }
     const [command, ...args] = message.split(" ");
     switch (command) {
       case "/load": {
@@ -120,6 +124,9 @@ export default function Home() {
   };
 
   const sendMessage = (message?: string) => {
+    if (new Date().getTime() - newCommandTime < 500) {
+      return;
+    }
     if ((message || messageInput.trim()) && socket && currentRoom) {
       socket.emit("send-message", {
         roomId: currentRoom,
