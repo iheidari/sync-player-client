@@ -16,7 +16,7 @@ interface Message {
   timestamp: string;
 }
 
-const SOCKET_URL = "https://sync-player-server.onrender.com";
+const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL;
 
 export default function Home() {
   const [socket, setSocket] = useState<Socket | null>(null);
