@@ -8,6 +8,7 @@ interface VideoPlayerProps {
   videoUrl: string;
   onVideoUrlChange: (url: string) => void;
   videoRef: React.RefObject<HTMLVideoElement>;
+  commandTime: number;
 }
 
 export default function VideoPlayer({
@@ -16,6 +17,7 @@ export default function VideoPlayer({
   videoUrl,
   onVideoUrlChange,
   videoRef,
+  commandTime,
 }: VideoPlayerProps) {
   const [currentUrl, setCurrentUrl] = useState(initialUrl);
   const urlInputRef = useRef<HTMLInputElement>(null);
@@ -45,7 +47,9 @@ export default function VideoPlayer({
 
   const handleVideoPlay = () => {
     // Send "/play" message to chat when video starts playing
-    if (videoRef.current) {
+    const isNewCommand = new Date().getTime() - commandTime < 100;
+    console.log("🚀 ~ handleVideoPlay ~ commandTime:", commandTime);
+    if (videoRef.current && !isNewCommand) {
       onSendMessage(
         "/play " + Math.round(videoRef.current.currentTime * 100) / 100
       );
@@ -54,7 +58,10 @@ export default function VideoPlayer({
 
   const handleVideoPause = () => {
     // Send "/pause" message to chat when video is paused
-    onSendMessage("/pause");
+    const isNewCommand = new Date().getTime() - commandTime < 100;
+    if (!isNewCommand) {
+      onSendMessage("/pause");
+    }
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -85,13 +92,13 @@ export default function VideoPlayer({
             ref={videoRef}
             controls
             className="video-player"
+            loop={false}
+            preload="auto"
             style={{ width: "100%", maxWidth: "800px" }}
             onPlay={handleVideoPlay}
             onPause={handleVideoPause}
           >
-            <source src={currentUrl} type="video/mp4" />
-            <source src={currentUrl} type="video/webm" />
-            <source src={currentUrl} type="video/ogg" />
+            <source src={currentUrl} />
             Your browser does not support the video tag.
           </video>
         ) : (

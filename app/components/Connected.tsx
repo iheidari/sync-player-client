@@ -18,6 +18,7 @@ interface ChatProps {
   videoUrl: string;
   onVideoUrlChange: (url: string) => void;
   videoRef: React.RefObject<HTMLVideoElement>;
+  commandTime: number;
 }
 
 export default function Connected({
@@ -29,6 +30,7 @@ export default function Connected({
   videoUrl,
   onVideoUrlChange,
   videoRef,
+  commandTime,
 }: ChatProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -64,6 +66,7 @@ export default function Connected({
           videoUrl={videoUrl}
           onVideoUrlChange={onVideoUrlChange}
           videoRef={videoRef}
+          commandTime={commandTime}
         />
         <h3>Chat</h3>
         <div className="messages">

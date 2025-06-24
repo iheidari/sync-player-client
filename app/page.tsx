@@ -17,6 +17,7 @@ interface Message {
 }
 
 const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL;
+let commandTime = new Date().getTime();
 
 export default function Home() {
   const [socket, setSocket] = useState<Socket | null>(null);
@@ -29,7 +30,6 @@ export default function Home() {
   const [messageInput, setMessageInput] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [newCommandTime, setNewCommandTime] = useState(new Date().getTime());
 
   const log = (message: string) => {
     const timestamp = new Date().toISOString();
@@ -76,7 +76,9 @@ export default function Home() {
 
     newSocket.on("new-message", (data: Message) => {
       setMessages((prev) => [...prev, data]);
-      interpretMessage(data.message);
+      if (data.username !== currentUser) {
+        interpretMessage(data.message);
+      }
     });
 
     newSocket.on(
@@ -93,7 +95,7 @@ export default function Home() {
 
   const interpretMessage = (message: string) => {
     if (message.startsWith("/")) {
-      setNewCommandTime(new Date().getTime());
+      commandTime = new Date().getTime();
     }
     const [command, ...args] = message.split(" ");
     switch (command) {
@@ -124,7 +126,7 @@ export default function Home() {
   };
 
   const sendMessage = (message?: string) => {
-    if (new Date().getTime() - newCommandTime < 500) {
+    if (new Date().getTime() - commandTime < 200) {
       return;
     }
     if ((message || messageInput.trim()) && socket && currentRoom) {
@@ -168,6 +170,7 @@ export default function Home() {
           videoUrl={videoUrl}
           onVideoUrlChange={setVideoUrl}
           videoRef={videoRef}
+          commandTime={commandTime}
         />
       </div>
     );
