@@ -20,7 +20,9 @@ export default function VideoPlayer({
   commandTime,
 }: VideoPlayerProps) {
   const [currentUrl, setCurrentUrl] = useState(initialUrl);
+  const [subtitleUrl, setSubtitleUrl] = useState("");
   const urlInputRef = useRef<HTMLInputElement>(null);
+  const subtitleInputRef = useRef<HTMLInputElement>(null);
 
   // Update currentUrl when videoUrl prop changes
   useEffect(() => {
@@ -45,10 +47,20 @@ export default function VideoPlayer({
     }
   };
 
+  const handleSubtitleFileChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const fileUrl = URL.createObjectURL(file);
+      setSubtitleUrl(fileUrl);
+      console.log("🚀 ~ handleSubtitleFileChange ~ fileUrl:", fileUrl);
+    }
+  };
+
   const handleVideoPlay = () => {
     // Send "/play" message to chat when video starts playing
     const isNewCommand = new Date().getTime() - commandTime < 100;
-    console.log("🚀 ~ handleVideoPlay ~ commandTime:", commandTime);
     if (videoRef.current && !isNewCommand) {
       onSendMessage(
         "/play " + Math.round(videoRef.current.currentTime * 100) / 100
@@ -84,6 +96,17 @@ export default function VideoPlayer({
             Load
           </button>
         </form>
+
+        <div className="url-input-group" style={{ marginTop: "10px" }}>
+          <input
+            ref={subtitleInputRef}
+            type="file"
+            accept=".srt,.vtt,.ass,.ssa"
+            placeholder="Enter subtitle URL..."
+            className="url-input"
+            onChange={handleSubtitleFileChange}
+          />
+        </div>
       </div>
 
       <div className="video-container">
@@ -93,12 +116,21 @@ export default function VideoPlayer({
             controls
             className="video-player"
             loop={false}
-            preload="auto"
+            autoPlay
             style={{ width: "100%", maxWidth: "800px" }}
             onPlay={handleVideoPlay}
             onPause={handleVideoPause}
           >
             <source src={currentUrl} />
+            {subtitleUrl && (
+              <track
+                kind="subtitles"
+                src={subtitleUrl}
+                srcLang="en"
+                label="English"
+                default
+              />
+            )}
             Your browser does not support the video tag.
           </video>
         ) : (
