@@ -30,6 +30,7 @@ export default function Home() {
   const [messageInput, setMessageInput] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
   const videoRef = useRef<HTMLVideoElement>(null);
+  const sendMessageTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const log = (message: string) => {
     const timestamp = new Date().toISOString();
@@ -129,13 +130,22 @@ export default function Home() {
     if (new Date().getTime() - commandTime < 200) {
       return;
     }
-    if ((message || messageInput.trim()) && socket && currentRoom) {
-      socket.emit("send-message", {
-        roomId: currentRoom,
-        message: message || messageInput.trim(),
-      });
-      setMessageInput("");
+
+    // Clear any existing timeout
+    if (sendMessageTimeoutRef.current) {
+      clearTimeout(sendMessageTimeoutRef.current);
     }
+
+    // Set a new timeout to execute the message sending after 100ms
+    sendMessageTimeoutRef.current = setTimeout(() => {
+      if ((message || messageInput.trim()) && socket && currentRoom) {
+        socket.emit("send-message", {
+          roomId: currentRoom,
+          message: message || messageInput.trim(),
+        });
+        setMessageInput("");
+      }
+    }, 100);
   };
 
   const leaveRoom = () => {
